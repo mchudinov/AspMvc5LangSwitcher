@@ -1,9 +1,10 @@
-﻿<!DOCTYPE html>
-<html>
+﻿@using AspMvc5LangSwitcher.Models
+@using Resources
+<!DOCTYPE html>
+<html lang="@System.Globalization.CultureInfo.CurrentUICulture.Name">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@ViewBag.Title - My ASP.NET Application</title>
     <link href="~/Content/Site.css" rel="stylesheet" type="text/css" />
     <link href="~/Content/bootstrap.min.css" rel="stylesheet" type="text/css" />
 </head>
@@ -11,19 +12,46 @@
     <div class="navbar navbar-inverse navbar-fixed-top">
         <div class="container">
             <div class="navbar-header">
-                @Html.ActionLink("Application name", "Index", "Default", new { area = "" }, new { @class = "navbar-brand" })
+                @Html.ActionLink(GlobalRes.Application_name, "Index", "Default", new { area = "" }, new { @class = "navbar-brand" })
             </div>
-            <div class="navbar-collapse collapse">
-                <ul class="nav navbar-nav">
-                </ul>
-            </div>
-        </div>
-    </div>
 
+            <div class="pull-right">
+                <div class="dropdown">
+                    <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">
+                        @Language.FindByCode(ViewContext.RouteData.Values["lang"].ToString())
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu">
+                        @foreach (var item in Language.All)
+                        {
+                            @Url.LangSwitcher(ViewContext.RouteData, item)
+                        }
+                    </ul>
+                </div>
+            </div>
+
+            <div class="pull-right">
+                @using (Html.BeginForm("UpdateLanguage", "Language"))
+                {
+                    @Html.AntiForgeryToken()
+
+                    var listLanguages =
+                        from language in Language.All
+                        select new SelectListItem
+                        {
+                            Selected = (language.Code == ViewContext.RouteData.Values["lang"].ToString()),
+                            Text = language.Name,
+                            Value = language.Code
+                        };
+
+                    @Html.DropDownList("language", listLanguages, new { onchange = "this.form.submit();" })
+                }
+            </div>
+        </div>        
+    </div>
     <div class="container body-content">
         @RenderBody()
     </div>
-
     <script src="~/Scripts/jquery-3.1.1.min.js"></script>
     <script src="~/Scripts/bootstrap.min.js"></script>
 </body>

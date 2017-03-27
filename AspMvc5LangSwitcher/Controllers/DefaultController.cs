@@ -2,7 +2,7 @@
 
 namespace AspMvc5LangSwitcher.Controllers
 {
-    public class DefaultController : Controller
+    public class DefaultController : BaseController
     {
         // GET: Default
         public ActionResult Index()
